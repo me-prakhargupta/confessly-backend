@@ -1,6 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { ApiError } from "../utils/ApiError.js";
 import UserModel from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Types } from "mongoose";
 import { generatOTP, hashOTP } from "../utils/otp.js";
@@ -177,6 +177,24 @@ const verifyUser = asyncHandler(async (req, res) => {
     return res.json(new ApiResponse(200, {}, "Email verified successfully"));
 });
 
+const acceptMessage = asyncHandler(async (req, res) => {
+    const { isAccepting } = req.body
+
+    try {
+        await UserModel.findByIdAndUpdate(
+            req.user?._id,
+            { acceptMessages: isAccepting},
+            {new: true}
+        );
+
+        return res.json(new ApiResponse(200, {}, "Updated successfully"));
+
+    } catch(error) {
+        throw new ApiError(200, "Internal server error");
+    }
+
+});
+
 //Update user password or change user password
 // const changePassword = asyncHandler(async (req, res) => {
 
@@ -201,5 +219,6 @@ export {
     signupUser,
     signinUser,
     logoutUser,
-    verifyUser
+    verifyUser,
+    acceptMessage
 }

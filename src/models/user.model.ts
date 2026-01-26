@@ -9,9 +9,9 @@ export interface User extends Document {
     username: string;
     email: string;
     password: string;
-    coverImage: string;
+    profileImage: string;
     refreshToken: string;
-    isAcceptingMessage: boolean;
+    acceptMessages: boolean;
     isVerified: boolean;
     emailVerificationToken: string | null;
     emailVerificationExpiry: Date | null;
@@ -47,7 +47,7 @@ const userSchema = new Schema<User>({
         minlength: [7, "Password must be at least 7 characters long"],
         maxlength: [21, "Password must be at most 21 characters long"]
     },
-    coverImage: {
+    profileImage: {
         type: String,
         default: ""
     },
@@ -55,7 +55,7 @@ const userSchema = new Schema<User>({
         type: String,
         default: ""
     },
-    isAcceptingMessage: {
+    acceptMessages: {
         type: Boolean,
         default: true
     },

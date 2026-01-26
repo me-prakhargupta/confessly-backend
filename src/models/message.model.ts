@@ -1,27 +1,50 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IMessage extends Document {
-    messageContent: string;
-    from: mongoose.Types.ObjectId;
-    to: mongoose.Types.ObjectId;
+    senderId: mongoose.Types.ObjectId;
+    receiverId: mongoose.Types.ObjectId;
+    content: string;
+    isAnonymous: boolean;
+    status: string;
+    isDeleted: boolean;
+    deletedAt: Date;
 };
 
 const messageSchema = new Schema<IMessage>({
-    messageContent: {
+    senderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: false
+    },
+    receiverId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        trim: true,
+        required: true,
+    },
+    content: {
         type: String,
         required: true,
-        minlength: [10, "Message must be at least 10 characters long"],
-        maxlength: [300, "Message must be at most 300 characters long"]
+        trim: true,
+        maxLength: 500
     },
-    from: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
+    isAnonymous: {
+        type: Boolean,
+        default: true
     },
-    to: {
-        type:Schema.Types.ObjectId,
-        ref: "User"
-    }
-
+    status: {
+        type: String,
+        enum: ["sent", "delivered", "seen"],
+        default: "sent"
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    deletedAt: {
+        type: Date,
+        default: null
+    },
 }, {timestamps: true});
 
 const MessageModel = mongoose.model<IMessage>("Message", messageSchema);

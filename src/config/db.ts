@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { MONGO_URI } from "./env.js";
 import { DB_NAME } from "./env.js";
 
-const connectDB = async() => {
+const connectDb = async() => {
     try {
         await mongoose.connect(`${MONGO_URI}/${DB_NAME}`);
         console.log("MongoDB connected!");
@@ -12,4 +12,4 @@ const connectDB = async() => {
     }
 };
 
-export default connectDB;
+export default connectDb;
