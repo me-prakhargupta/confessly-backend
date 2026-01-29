@@ -36,6 +36,6 @@ app.use("/api/v1/messages", messsageRouter);
 import thoughtRouter from "./routes/thought.route.js";
 app.use("/api/v1/thought", thoughtRouter);
 
-// import { errorMiddleware } from "./middlewares/error.middleware.js";
-// app.use(errorMiddleware);
+import { errorMiddleware } from "./middlewares/error.middleware.js";
+app.use(errorMiddleware);
 export default app;

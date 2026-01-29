@@ -11,11 +11,11 @@ export interface User extends Document {
     password: string;
     profileImage: string;
     refreshToken: string;
-    acceptMessages: boolean;
+    thoughtsCount: number;
     isVerified: boolean;
     emailVerificationToken: string | null;
     emailVerificationExpiry: Date | null;
-    isVisible: boolean;
+    isPrivate: boolean;
 
     isPasswordCorrect(password: string): Promise<boolean>;
     generateAccessToken(): Promise<string>;
@@ -45,7 +45,7 @@ const userSchema = new Schema<User>({
         type: String, 
         required: true,
         minlength: [7, "Password must be at least 7 characters long"],
-        maxlength: [21, "Password must be at most 21 characters long"]
+        maxlength: [21, "Password must be at most 21 characters long"],
     },
     profileImage: {
         type: String,
@@ -55,9 +55,9 @@ const userSchema = new Schema<User>({
         type: String,
         default: ""
     },
-    acceptMessages: {
-        type: Boolean,
-        default: true
+    thoughtsCount: {
+        type: Number,
+        default: 0
     },
     isVerified: {
         type: Boolean,
@@ -71,9 +71,9 @@ const userSchema = new Schema<User>({
         type: Date,
         default: null
     },
-    isVisible: {
+    isPrivate: {
         type: Boolean,
-        default: false
+        default: false,
     }
     
 }, {timestamps: true});

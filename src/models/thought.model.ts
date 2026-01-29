@@ -1,13 +1,13 @@
 import mongoose, {Schema, Document} from "mongoose";
 
 export interface IThought extends Document {
-    userId?: mongoose.Types.ObjectId;
+    sharedBy?: mongoose.Types.ObjectId;
     thought: string;
     isDeleted: boolean;
 };
 
 const thoughtSchema = new Schema<IThought>({
-    userId: {
+    sharedBy: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: false,

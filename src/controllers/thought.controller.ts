@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import ThoughtModel from "../models/thought.model.js";
 
 export const shareThought = asyncHandler(async (req, res) => {
+    
     const { thought } = req.body;
 
     if(!thought) {

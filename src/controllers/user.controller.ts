@@ -87,19 +87,24 @@ const signupUser = asyncHandler(async (req, res) => {
         password
     });
 
+    if(!user) throw new ApiError(500, "Something went wrong, try again");
+
     const { accessToken, refreshToken } = await generateRefreshAccessToken(user._id);
 
-    // const { otp } = await generateEmailVerificationToken(user._id);
+    const safeUser = {
+        _id: user._id,
+        fullname: user.fullname,
+        username: user.username,
+        profileImage: user.profileImage,
+    }
 
-    const createdUser = await UserModel.findById(user._id).select("-password -coverImage -refreshToken -isAcceptingMessage -isVerified -isVisible");
-    
-    if(!createdUser) throw new ApiError(500, "Something went wrong, try again");
+    // const { otp } = await generateEmailVerificationToken(user._id);
 
     return res
     .cookie("accessToken", accessToken, cookieOptions)
     .cookie("refreshToken", refreshToken, cookieOptions)
     .json(
-        new ApiResponse(201, {user: createdUser},
+        new ApiResponse(201, {user: safeUser},
             "Your account has been created successfully. We’re glad to have you with us."
         )
     )
@@ -110,7 +115,7 @@ const signinUser = asyncHandler(async (req, res) => {
     const { identifier, password } = req.body;
 
     if(!identifier) throw new ApiError(400, "Please provide your username or email to continue.");
-
+    
     if(!password) {
         throw new ApiError(400, "Please enter your password to continue.");
     }
@@ -125,15 +130,20 @@ const signinUser = asyncHandler(async (req, res) => {
 
     if(!isPasswordValid) throw new ApiError(401, "Invalid username/email or password.");
 
-    const {accessToken, refreshToken } = await generateRefreshAccessToken(user._id);
+    const { accessToken, refreshToken } = await generateRefreshAccessToken(user._id);
 
-    const loggedInUser = await UserModel.findById(user._id).select("-password -coverImage -refreshToken -isAcceptingMessage -isVerified -isVisible");
-
+    const safeUser = {
+        _id: user._id,
+        fullname: user.fullname,
+        username: user.username,
+        profileImage: user.profileImage,
+    }
+    
     return res
     .cookie("accessToken", accessToken, cookieOptions)
     .cookie("refreshToken", refreshToken, cookieOptions)
     .json(
-        new ApiResponse(200, {user: loggedInUser},
+        new ApiResponse(200, {user: safeUser},
             "Welcome back. You’ve been logged in successfully."
         )
     )
@@ -146,12 +156,20 @@ const getMeUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Please sign in to continue.");
     }
 
-    const user = await UserModel.findById(userId).select("-password refreshToken");
+    const user = await UserModel.findById(userId);
 
     if(!user) {
         throw new ApiError(401, "Unauthorized");
     }
 
+    const safeUser = {
+        _id: user._id,
+        fullname: user.fullname,
+        username: user.username,
+        thoughtsCount: user.thoughtsCount,
+    };
+
+    console.log(user);
     return res.json(new ApiResponse(200, user));
 });
 
