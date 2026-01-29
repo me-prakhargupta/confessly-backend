@@ -6,7 +6,9 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 const corsOptions: CorsOptions = {
-    origin: "http://localhost:3000",
+    origin: [
+    "http://localhost:3000",
+    "http://192.168.1.38:3000"],
     methods: ["GET", "POST"],
     credentials: true,
     optionsSuccessStatus: 200
