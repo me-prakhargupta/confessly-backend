@@ -108,10 +108,10 @@ userSchema.methods.generateAccessToken = function() {
 };
 
 userSchema.methods.generateRefreshToken = async function() {
-    jwt.sign({
+    return jwt.sign({
         _id: this._id,
     }, REFRESH_TOKEN_SECRET, {
-        expiresIn: ACCESS_TOKEN_EXPIRY
+        expiresIn: REFRESH_TOKEN_EXPIRY
     })
 };
 

@@ -29,27 +29,28 @@ const generateRefreshAccessToken = async(userId: Types.ObjectId | string): Promi
     }
 };
 
-const generateEmailVerificationToken = async(userId: Types.ObjectId | string): Promise<string> => {
-    try {
-        const user = await UserModel.findById(userId);
-        if(!user) throw new ApiError(400, "User not found while generating verification token");
+// const generateEmailVerificationToken = async(userId: Types.ObjectId | string): Promise<string> => {
+//     try {
+//         const user = await UserModel.findById(userId);
+//         if(!user) throw new ApiError(400, "User not found while generating verification token");
 
-        const otp = generatOTP();
-        const hashedOTP = hashOTP(otp);
+//         const otp = generatOTP();
+//         const hashedOTP = hashOTP(otp);
 
-        user.emailVerificationToken = hashedOTP;
-        //Verification token is valid for three days
-        user.emailVerificationExpiry = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+//         user.emailVerificationToken = hashedOTP;
 
-        await user.save({validateBeforeSave: false});
-        console.log("Verification code: ", otp);
+//         //Verification token is valid for three days
+//         user.emailVerificationExpiry = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
 
-        return otp;
+//         await user.save({validateBeforeSave: false});
+//         console.log("Verification code: ", otp);
 
-    } catch(error) {
-        throw new ApiError(500, "Error while generating verification code");
-    }
-}
+//         return otp;
+
+//     } catch(error) {
+//         throw new ApiError(500, "Error while generating verification code");
+//     }
+// }
 
  const cookieOptions = {
         httpsOnly: true,
@@ -138,20 +139,36 @@ const signinUser = asyncHandler(async (req, res) => {
     )
 });
 
-// const logoutUser = asyncHandler(async (req, res) => {
-//     if(!req.user?._id) throw new ApiError(400, "User not found");
+const getMeUser = asyncHandler(async (req, res) => {
+    const userId = req.user?._id;
+
+    if(!userId) {
+        throw new ApiError(401, "Please sign in to continue.");
+    }
+
+    const user = await UserModel.findById(userId).select("-password refreshToken");
+
+    if(!user) {
+        throw new ApiError(401, "Unauthorized");
+    }
+
+    return res.json(new ApiResponse(200, user));
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+    if(!req.user?._id) throw new ApiError(400, "User not found");
     
-//     await UserModel.findByIdAndUpdate(req.user._id, {
-//         $unset: {refreshToken: ""}
-//     }, {
-//         new: true
-//     })
+    await UserModel.findByIdAndUpdate(req.user._id, {
+        $unset: {refreshToken: ""}
+    }, {
+        new: true
+    })
     
-//     return res.status(200)
-//     .clearCookie("accessToken", cookieOptions)
-//     .clearCookie("refreshToken", cookieOptions)
-//     .json(new ApiResponse(200, {}, "User log out successfully"))
-// });
+    return res.status(200)
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
+    .json(new ApiResponse(200, {}, "User log out successfully"))
+});
 
 // const verifyUser = asyncHandler(async (req, res) => {
 //     const { email, code } = req.body
@@ -187,6 +204,7 @@ const signinUser = asyncHandler(async (req, res) => {
 //     return res.json(new ApiResponse(200, {}, "Email verified successfully"));
 // });
 
+
 // const acceptMessage = asyncHandler(async (req, res) => {
 //     const { isAccepting } = req.body
 
@@ -204,22 +222,6 @@ const signinUser = asyncHandler(async (req, res) => {
 //     }
 
 // });
-
-const getMeUser = asyncHandler(async (req, res) => {
-    const userId = req.user?._id;
-
-    if(!userId) {
-        throw new ApiError(401, "Please sign in to continue.");
-    }
-
-    const user = await UserModel.findById(userId).select("-password refreshToken");
-
-    if(!user) {
-        throw new ApiError(401, "Unauthorized");
-    }
-
-    return res.json(new ApiResponse(200, user));
-});
 
 
 //Update user password or change user password
@@ -245,8 +247,8 @@ const getMeUser = asyncHandler(async (req, res) => {
 export {
     signupUser,
     signinUser,
-    getMeUser
-    // logoutUser,
+    getMeUser,
+    logoutUser,
     // verifyUser,
     // acceptMessage
 }
