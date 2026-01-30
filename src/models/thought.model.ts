@@ -3,7 +3,9 @@ import mongoose, {Schema, Document} from "mongoose";
 export interface IThought extends Document {
     sharedBy?: mongoose.Types.ObjectId;
     thought: string;
+    
     isDeleted: boolean;
+    isVisible?: string;
 };
 
 const thoughtSchema = new Schema<IThought>({
@@ -21,6 +23,11 @@ const thoughtSchema = new Schema<IThought>({
     isDeleted: {
         type: Boolean,
         default: false
+    },
+    isVisible: {
+        type: String,
+        enum: ["private", "public"],
+        default: "public",
     }
 }, {timestamps: true});
 

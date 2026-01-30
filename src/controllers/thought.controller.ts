@@ -7,17 +7,19 @@ export const shareThought = asyncHandler(async (req, res) => {
     
     const { thought } = req.body;
 
-    if(!thought) {
+    if(!thought || !thought.trim()) {
         throw new ApiError(400, "Thought cannot be empty or contain only whitespace.");
     }
-    
-    const newThought = await ThoughtModel.create({
-        thought
-    })
 
-    if(!newThought) {
-        throw new ApiError(500, "Failed to share the thought. Please try again.")
+    const thoughtInfo: any = {
+        thought: thought.trim(),
     }
+
+    if(req.user?._id) {
+        thoughtInfo.sharedBy = req.user._id;
+    }    
+
+    await ThoughtModel.create(thoughtInfo);
 
     return res.json(new ApiResponse(201, {}, "Your thought has been shared. Thank you for sharing."));
 });

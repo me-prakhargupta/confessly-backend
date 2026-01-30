@@ -52,10 +52,10 @@ const generateRefreshAccessToken = async(userId: Types.ObjectId | string): Promi
 //     }
 // }
 
- const cookieOptions = {
-        httpsOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax" as const
+const cookieOptions = {
+    httpsOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const
 };
 
 const signupUser = asyncHandler(async (req, res) => {
@@ -170,6 +170,7 @@ const getMeUser = asyncHandler(async (req, res) => {
     };
 
     console.log(user);
+    
     return res.json(new ApiResponse(200, user));
 });
 

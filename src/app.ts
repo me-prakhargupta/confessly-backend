@@ -8,7 +8,7 @@ const app = express();
 const corsOptions: CorsOptions = {
     origin: [
     "http://localhost:3000",
-    "http://192.168.1.38:3000"],
+    "http://192.168.1.48:3000"],
     methods: ["GET", "POST"],
     credentials: true,
     optionsSuccessStatus: 200
@@ -23,21 +23,23 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-    res.send("Hey from TS Backend");
+    res.send("Server is running");
 });
 
 //User routes
 import userRouter from "./routes/user.route.js";
 app.use("/api/v1/auth", userRouter);
 
-//Message routes
-import messsageRouter from "./routes/message.route.js";
-app.use("/api/v1/messages", messsageRouter);
-
 //Thoughts routes
 import thoughtRouter from "./routes/thought.route.js";
 app.use("/api/v1/thought", thoughtRouter);
 
+//Message routes
+import messsageRouter from "./routes/message.route.js";
+app.use("/api/v1/message", messsageRouter);
+
+//Global error middleware
 import { errorMiddleware } from "./middlewares/error.middleware.js";
 app.use(errorMiddleware);
+
 export default app;
